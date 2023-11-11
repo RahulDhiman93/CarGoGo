@@ -1,6 +1,6 @@
 development:
   dialect: postgres
-  database: InrixHDB
+  database: InrixBackend
   user: rahuldhiman
   password:
   host: 127.0.0.1
