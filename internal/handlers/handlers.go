@@ -122,12 +122,51 @@ func (m *Repository) AccessTokenLogin(w http.ResponseWriter, r *http.Request) {
 
 	user, err := m.DB.AccessTokenLogin(token)
 	if err != nil {
-		internalServerError(w, err)
+		internalServerError(w, fmt.Errorf("user not found"))
 		return
 	}
 
 	respData := make(map[string]interface{})
 	respData["user"] = user
+	response := jsonResponse{
+		OK:      true,
+		Message: "user registered successfully",
+		Data:    respData,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+// PostRide creates a new user
+func (m *Repository) PostRide(w http.ResponseWriter, r *http.Request) {
+	var requestBody models.AuthRequestBody
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&requestBody)
+	if err != nil {
+		internalServerError(w, err)
+		return
+	}
+
+	email := requestBody.Email
+	password := requestBody.Password
+	firstName := requestBody.FirstName
+	lastName := requestBody.LastName
+	phone := requestBody.Phone
+
+	if email == "" || password == "" || firstName == "" || lastName == "" {
+		internalServerError(w, fmt.Errorf("please add all attributes"))
+		return
+	}
+
+	token, err := m.DB.RegisterUser(email, password, firstName, lastName, phone)
+	if err != nil {
+		internalServerError(w, err)
+		return
+	}
+	respData := make(map[string]interface{})
+	respData["token"] = token
+
 	response := jsonResponse{
 		OK:      true,
 		Message: "user registered successfully",

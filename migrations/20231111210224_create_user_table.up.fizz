@@ -5,6 +5,6 @@ create_table("users") {
   t.Column("last_name", "string", {"default": ""})
   t.Column("email", "string", {unique: true})
   t.Column("password", "string", {"size": 60})
-  t.Column("phone", "string", {})
+  t.Column("phone", "string", {unique: true})
   t.Column("access_level", "integer", {"default": 1})
 }

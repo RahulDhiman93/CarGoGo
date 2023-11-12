@@ -1,0 +1,1 @@
+drop_foreign_key("rides", "rides_host_id_fk", {})

@@ -15,6 +15,10 @@ func routes() http.Handler {
 		mux.Get("/accessTokenLogin/{access_token}", handlers.Repo.AccessTokenLogin)
 	})
 
+	mux.Route("/rides", func(mux chi.Router) {
+		mux.Post("/post", handlers.Repo.LoginUser)
+	})
+
 	//fileServer := http.FileServer(http.Dir("./static/"))
 	//mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
 

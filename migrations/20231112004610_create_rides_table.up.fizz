@@ -1,0 +1,14 @@
+create_table("rides") {
+  t.Column("id", "integer", {primary: true})
+  t.Column("host_id", "integer", {})
+  t.Column("car_type", "integer", {"default": 1})
+  t.Column("license_plate", "string", {"default": ""})
+  t.Column("dl", "string", {"default": ""})
+  t.Column("dateTime", "timestamp", {})
+  t.Column("from_address", "string", {"default": ""})
+  t.Column("from_lat", "double precision", {})
+  t.Column("from_long", "double precision", {})
+  t.Column("to_address", "string", {"default": ""})
+  t.Column("to_lat", "double precision", {})
+  t.Column("to_long", "double precision", {})
+}
