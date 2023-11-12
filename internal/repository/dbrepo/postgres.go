@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"log"
+	"math"
 	"time"
 )
 
@@ -185,7 +186,7 @@ func (m *postgresDBRepo) RaiseRideRequest(r models.RaiseRideRequest) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	query := `UPDATE rides SET req_cust_ids = ARRAY_APPEND(req_cust_ids, $2) WHERE id = $1;`
+	query := `UPDATE rides SET req_cust_ids = ARRAY_APPEND(req_cust_ids, $2), status = 1  WHERE id = $1;`
 
 	_, err := m.DB.ExecContext(ctx, query,
 		r.RideId,
@@ -198,4 +199,113 @@ func (m *postgresDBRepo) RaiseRideRequest(r models.RaiseRideRequest) error {
 	}
 
 	return nil
+}
+
+// ConfirmRide Raise a request to ride by users to host
+func (m *postgresDBRepo) ConfirmRide(r models.ConfirmRide) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `UPDATE rides SET customer_id = $2, status = 2 WHERE id = $1;`
+
+	_, err := m.DB.ExecContext(ctx, query,
+		r.RideId,
+		r.CustomerId,
+	)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+// GetRides gets the rides info from DB
+func (m *postgresDBRepo) GetRides(r models.GetRides) ([]models.Ride, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var rides []models.Ride
+
+	query := `SELECT id, user_id, car_type, license_plate, dl, date_time, price, status, req_cust_ids, customer_id, from_address, from_lat, from_long, to_address, to_lat, to_long FROM rides WHERE status IN (0,1)
+	 AND DATE(date_time) = DATE($1)`
+
+	rows, err := m.DB.QueryContext(ctx, query, r.DateTime)
+	if err != nil {
+		return rides, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var ride models.Ride
+		err := rows.Scan(
+			&ride.ID,
+			&ride.UserId,
+			&ride.CarType,
+			&ride.License,
+			&ride.DL,
+			&ride.DateTime,
+			&ride.Price,
+			&ride.Status,
+			&ride.ReqCustIds,
+			&ride.CustomerId,
+			&ride.FromAddress,
+			&ride.FromLat,
+			&ride.FromLong,
+			&ride.ToAddress,
+			&ride.ToLat,
+			&ride.ToLong,
+		)
+		if err != nil {
+			return rides, err
+		}
+		rides = append(rides, ride)
+	}
+
+	if err = rows.Err(); err != nil {
+		return rides, err
+	}
+
+	filteredRides := checkDistanceAndFilter(rides, r)
+	return filteredRides, nil
+}
+
+func checkDistanceAndFilter(rides []models.Ride, r models.GetRides) []models.Ride {
+	const earthRadius = 6371
+	fromLat := toRadians(r.FromLat)
+	fromLong := toRadians(r.FromLong)
+	toLat := toRadians(r.ToLat)
+	toLong := toRadians(r.ToLong)
+
+	var newRides []models.Ride
+	for _, ride := range rides {
+		fromLatRide := toRadians(ride.FromLat)
+		fromLongRide := toRadians(ride.FromLong)
+		toLatRide := toRadians(ride.ToLat)
+		toLongRide := toRadians(ride.ToLong)
+
+		fromDistLat := fromLatRide - fromLat
+		fromDistLong := fromLongRide - fromLong
+		toDistLat := toLatRide - toLat
+		toDistLong := toLongRide - toLong
+
+		aFrom := math.Pow(math.Sin(fromDistLat/2), 2) + math.Cos(fromLatRide)*math.Cos(fromLat)*math.Pow(math.Sin(fromDistLong/2), 2)
+		aTo := math.Pow(math.Sin(toDistLat/2), 2) + math.Cos(toLatRide)*math.Cos(toLat)*math.Pow(math.Sin(toDistLong/2), 2)
+		cFrom := 2 * math.Atan2(math.Sqrt(aFrom), math.Sqrt(1-aFrom))
+		cTo := 2 * math.Atan2(math.Sqrt(aTo), math.Sqrt(1-aTo))
+
+		distanceFrom := earthRadius * cFrom
+		distanceTo := earthRadius * cTo
+
+		if distanceFrom < 10 && distanceTo < 10 {
+			newRides = append(newRides, ride)
+		}
+	}
+
+	return newRides
+}
+
+func toRadians(deg float64) float64 {
+	return deg * (math.Pi / 180)
 }

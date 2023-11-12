@@ -9,27 +9,40 @@ type AuthRequestBody struct {
 }
 
 type Ride struct {
-	ID          int     `json:"id"`
-	UserId      int     `json:"user_id"`
-	CarType     int     `json:"car_type"`
-	License     string  `json:"license_plate"`
-	DL          string  `json:"dl"`
-	FromAddress string  `json:"from_address"`
-	FromLat     float64 `json:"from_lat"`
-	FromLong    float64 `json:"from_long"`
-	ToAddress   string  `json:"to_address"`
-	ToLong      float64 `json:"to_lat"`
-	ToLat       float64 `json:"to_long"`
-	Price       int     `json:"price"`
-	Status      int     `json:"status"`
-	ReqCustIds  []int   `json:"req_cust_ids"`
-	CustomerId  int     `json:"customer_id"`
-	DateTime    string  `json:"dateTime"`
+	ID          int         `json:"id"`
+	UserId      int         `json:"user_id"`
+	CarType     int         `json:"car_type"`
+	License     string      `json:"license_plate"`
+	DL          string      `json:"dl"`
+	FromAddress string      `json:"from_address"`
+	FromLat     float64     `json:"from_lat"`
+	FromLong    float64     `json:"from_long"`
+	ToAddress   string      `json:"to_address"`
+	ToLong      float64     `json:"to_lat"`
+	ToLat       float64     `json:"to_long"`
+	Price       int         `json:"price"`
+	Status      int         `json:"status"`
+	ReqCustIds  interface{} `json:"req_cust_ids"`
+	CustomerId  int         `json:"customer_id"`
+	DateTime    string      `json:"date_time"`
 }
 
 type RaiseRideRequest struct {
 	RideId    int `json:"ride_id"`
 	ReqCustId int `json:"req_cust_id"`
+}
+
+type ConfirmRide struct {
+	RideId     int `json:"ride_id"`
+	CustomerId int `json:"customer_id"`
+}
+
+type GetRides struct {
+	DateTime string  `json:"date_time"`
+	FromLat  float64 `json:"from_lat"`
+	FromLong float64 `json:"from_long"`
+	ToLat    float64 `json:"to_lat"`
+	ToLong   float64 `json:"to_long"`
 }
 
 type User struct {

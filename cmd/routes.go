@@ -15,11 +15,12 @@ func routes() http.Handler {
 		mux.Get("/accessTokenLogin/{access_token}", handlers.Repo.AccessTokenLogin)
 	})
 
-	mux.Route("/rides", func(mux chi.Router) {
+	mux.Route("/ride", func(mux chi.Router) {
 		mux.Post("/post", handlers.Repo.PostRide)
 		mux.Get("/getInfo/{id}", handlers.Repo.GetRideInfo)
-		mux.Post("/RaiseRideRequest", handlers.Repo.RaiseRideRequest)
-		mux.Post("/ConfirmRide", handlers.Repo.ConfirmRide)
+		mux.Post("/raiseRideRequest", handlers.Repo.RaiseRideRequest)
+		mux.Post("/confirmRide", handlers.Repo.ConfirmRide)
+		mux.Post("/getRides", handlers.Repo.GetRides)
 	})
 
 	//fileServer := http.FileServer(http.Dir("./static/"))

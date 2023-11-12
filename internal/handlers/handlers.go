@@ -241,9 +241,9 @@ func (m *Repository) RaiseRideRequest(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// RaiseRideRequest Creates a new ride on platform
-func (m *Repository) RaiseRideRequest(w http.ResponseWriter, r *http.Request) {
-	var requestBody models.RaiseRideRequest
+// ConfirmRide confirm the ride from host to customer
+func (m *Repository) ConfirmRide(w http.ResponseWriter, r *http.Request) {
+	var requestBody models.ConfirmRide
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&requestBody)
 	if err != nil {
@@ -252,14 +252,14 @@ func (m *Repository) RaiseRideRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rideId := requestBody.RideId
-	reqCustId := requestBody.ReqCustId
+	customerId := requestBody.CustomerId
 
-	if rideId == 0 || reqCustId == 0 {
+	if rideId == 0 || customerId == 0 {
 		internalServerError(w, fmt.Errorf("please add all attributes"))
 		return
 	}
 
-	err = m.DB.RaiseRideRequest(requestBody)
+	err = m.DB.ConfirmRide(requestBody)
 	if err != nil {
 		internalServerError(w, err)
 		return
@@ -267,7 +267,40 @@ func (m *Repository) RaiseRideRequest(w http.ResponseWriter, r *http.Request) {
 
 	response := jsonResponse{
 		OK:      true,
-		Message: "request raised successfully",
+		Message: "ride confirmed successfully",
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+// GetRides Gets the rides to customer according to date, from and to
+func (m *Repository) GetRides(w http.ResponseWriter, r *http.Request) {
+	var requestBody models.GetRides
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&requestBody)
+	if err != nil {
+		internalServerError(w, err)
+		return
+	}
+
+	if requestBody.DateTime == "" || requestBody.FromLat == 0.0 || requestBody.FromLong == 0.0 || requestBody.ToLat == 0.0 || requestBody.ToLong == 0.0 {
+		internalServerError(w, fmt.Errorf("please add all attributes"))
+		return
+	}
+
+	rides, err := m.DB.GetRides(requestBody)
+	if err != nil {
+		internalServerError(w, err)
+		return
+	}
+
+	respData := make(map[string]interface{})
+	respData["rides"] = rides
+	response := jsonResponse{
+		OK:      true,
+		Message: "rides fetched successfully",
+		Data:    respData,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

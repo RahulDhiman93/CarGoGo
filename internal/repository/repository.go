@@ -9,4 +9,6 @@ type DatabaseRepo interface {
 	PostRide(r models.Ride) error
 	GetRideInfo(id int) (models.Ride, error)
 	RaiseRideRequest(r models.RaiseRideRequest) error
+	ConfirmRide(r models.ConfirmRide) error
+	GetRides(r models.GetRides) ([]models.Ride, error)
 }
