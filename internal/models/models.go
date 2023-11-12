@@ -9,21 +9,27 @@ type AuthRequestBody struct {
 }
 
 type Ride struct {
-	User    User
-	CarType int
-	License string
-	DL      string
-	From    location
-	To      location
-	Price   int
-	Date    string
-	Time    string
+	ID          int     `json:"id"`
+	UserId      int     `json:"user_id"`
+	CarType     int     `json:"car_type"`
+	License     string  `json:"license_plate"`
+	DL          string  `json:"dl"`
+	FromAddress string  `json:"from_address"`
+	FromLat     float64 `json:"from_lat"`
+	FromLong    float64 `json:"from_long"`
+	ToAddress   string  `json:"to_address"`
+	ToLong      float64 `json:"to_lat"`
+	ToLat       float64 `json:"to_long"`
+	Price       int     `json:"price"`
+	Status      int     `json:"status"`
+	ReqCustIds  []int   `json:"req_cust_ids"`
+	CustomerId  int     `json:"customer_id"`
+	DateTime    string  `json:"dateTime"`
 }
 
-type location struct {
-	Address   string
-	Latitude  float64
-	Longitude float64
+type RaiseRideRequest struct {
+	RideId    int `json:"ride_id"`
+	ReqCustId int `json:"req_cust_id"`
 }
 
 type User struct {

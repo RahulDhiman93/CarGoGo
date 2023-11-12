@@ -16,7 +16,10 @@ func routes() http.Handler {
 	})
 
 	mux.Route("/rides", func(mux chi.Router) {
-		mux.Post("/post", handlers.Repo.LoginUser)
+		mux.Post("/post", handlers.Repo.PostRide)
+		mux.Get("/getInfo/{id}", handlers.Repo.GetRideInfo)
+		mux.Post("/RaiseRideRequest", handlers.Repo.RaiseRideRequest)
+		mux.Post("/ConfirmRide", handlers.Repo.ConfirmRide)
 	})
 
 	//fileServer := http.FileServer(http.Dir("./static/"))

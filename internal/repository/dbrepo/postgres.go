@@ -106,3 +106,96 @@ func (m *postgresDBRepo) AccessTokenLogin(token string) (models.User, error) {
 
 	return user, nil
 }
+
+// PostRide Post the ride by host to users
+func (m *postgresDBRepo) PostRide(r models.Ride) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	timeString := r.DateTime
+	layout := "2006-01-02 15:04"
+	timestamp, err := time.Parse(layout, timeString)
+	if err != nil {
+		return err
+	}
+	query := `insert into rides (user_id, car_type, license_plate, dl, date_time, price, status, from_address, from_lat, from_long, to_address, to_lat, to_long,created_at,updated_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`
+
+	_, err = m.DB.ExecContext(ctx, query,
+		r.UserId,
+		r.CarType,
+		r.License,
+		r.DL,
+		timestamp,
+		r.Price,
+		r.Status,
+		r.FromAddress,
+		r.FromLat,
+		r.FromLong,
+		r.ToAddress,
+		r.ToLat,
+		r.ToLong,
+		time.Now(),
+		time.Now(),
+	)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+// GetRideInfo gets the ride info from DB
+func (m *postgresDBRepo) GetRideInfo(id int) (models.Ride, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var ride models.Ride
+
+	query := `SELECT id, user_id, car_type, license_plate, dl, date_time, price, status, req_cust_ids, customer_id, from_address, from_lat, from_long, to_address, to_lat, to_long FROM rides WHERE id = $1`
+
+	err := m.DB.QueryRowContext(ctx, query, id).Scan(
+		&ride.ID,
+		&ride.UserId,
+		&ride.CarType,
+		&ride.License,
+		&ride.DL,
+		&ride.DateTime,
+		&ride.Price,
+		&ride.Status,
+		&ride.ReqCustIds,
+		&ride.CustomerId,
+		&ride.FromAddress,
+		&ride.FromLat,
+		&ride.FromLong,
+		&ride.ToAddress,
+		&ride.ToLat,
+		&ride.ToLong,
+	)
+	if err != nil {
+		return ride, err
+	}
+
+	return ride, nil
+}
+
+// RaiseRideRequest Raise a request to ride by users to host
+func (m *postgresDBRepo) RaiseRideRequest(r models.RaiseRideRequest) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `UPDATE rides SET req_cust_ids = ARRAY_APPEND(req_cust_ids, $2) WHERE id = $1;`
+
+	_, err := m.DB.ExecContext(ctx, query,
+		r.RideId,
+		r.ReqCustId,
+	)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}

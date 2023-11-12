@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi"
 	_ "github.com/go-chi/chi"
 	"net/http"
+	"strconv"
 )
 
 var Repo *Repository
@@ -104,7 +105,7 @@ func (m *Repository) LoginUser(w http.ResponseWriter, r *http.Request) {
 	respData["user"] = user
 	response := jsonResponse{
 		OK:      true,
-		Message: "user registered successfully",
+		Message: "user authenticated successfully",
 		Data:    respData,
 	}
 
@@ -130,7 +131,7 @@ func (m *Repository) AccessTokenLogin(w http.ResponseWriter, r *http.Request) {
 	respData["user"] = user
 	response := jsonResponse{
 		OK:      true,
-		Message: "user registered successfully",
+		Message: "user authenticated successfully",
 		Data:    respData,
 	}
 
@@ -138,9 +139,9 @@ func (m *Repository) AccessTokenLogin(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// PostRide creates a new user
+// PostRide Creates a new ride on platform
 func (m *Repository) PostRide(w http.ResponseWriter, r *http.Request) {
-	var requestBody models.AuthRequestBody
+	var requestBody models.Ride
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&requestBody)
 	if err != nil {
@@ -148,29 +149,125 @@ func (m *Repository) PostRide(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	email := requestBody.Email
-	password := requestBody.Password
-	firstName := requestBody.FirstName
-	lastName := requestBody.LastName
-	phone := requestBody.Phone
+	userId := requestBody.UserId
+	license := requestBody.License
+	dl := requestBody.DL
+	dateTime := requestBody.DateTime
+	price := requestBody.Price
+	fromAddress := requestBody.FromAddress
+	toAddress := requestBody.ToAddress
 
-	if email == "" || password == "" || firstName == "" || lastName == "" {
+	if userId == 0 || fromAddress == "" || toAddress == "" || price == 0 || dateTime == "" || license == "" || dl == "" {
 		internalServerError(w, fmt.Errorf("please add all attributes"))
 		return
 	}
 
-	token, err := m.DB.RegisterUser(email, password, firstName, lastName, phone)
+	err = m.DB.PostRide(requestBody)
 	if err != nil {
 		internalServerError(w, err)
 		return
 	}
-	respData := make(map[string]interface{})
-	respData["token"] = token
 
 	response := jsonResponse{
 		OK:      true,
-		Message: "user registered successfully",
+		Message: "ride posted successfully",
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+// GetRideInfo gets the info of the ride by ID
+func (m *Repository) GetRideInfo(w http.ResponseWriter, r *http.Request) {
+	ride_id := chi.URLParam(r, "id")
+	if ride_id == "" {
+		internalServerError(w, fmt.Errorf("please add ride_id"))
+		return
+	}
+
+	rideId, err := strconv.Atoi(ride_id)
+	if err != nil {
+		internalServerError(w, fmt.Errorf("ride not found"))
+		return
+	}
+	ride, err := m.DB.GetRideInfo(rideId)
+	if err != nil {
+		internalServerError(w, fmt.Errorf("ride not found"))
+		return
+	}
+
+	respData := make(map[string]interface{})
+	respData["ride"] = ride
+	response := jsonResponse{
+		OK:      true,
+		Message: "ride fetched successfully",
 		Data:    respData,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+// RaiseRideRequest Creates a new ride on platform
+func (m *Repository) RaiseRideRequest(w http.ResponseWriter, r *http.Request) {
+	var requestBody models.RaiseRideRequest
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&requestBody)
+	if err != nil {
+		internalServerError(w, err)
+		return
+	}
+
+	rideId := requestBody.RideId
+	reqCustId := requestBody.ReqCustId
+
+	if rideId == 0 || reqCustId == 0 {
+		internalServerError(w, fmt.Errorf("please add all attributes"))
+		return
+	}
+
+	err = m.DB.RaiseRideRequest(requestBody)
+	if err != nil {
+		internalServerError(w, err)
+		return
+	}
+
+	response := jsonResponse{
+		OK:      true,
+		Message: "request raised successfully",
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+// RaiseRideRequest Creates a new ride on platform
+func (m *Repository) RaiseRideRequest(w http.ResponseWriter, r *http.Request) {
+	var requestBody models.RaiseRideRequest
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&requestBody)
+	if err != nil {
+		internalServerError(w, err)
+		return
+	}
+
+	rideId := requestBody.RideId
+	reqCustId := requestBody.ReqCustId
+
+	if rideId == 0 || reqCustId == 0 {
+		internalServerError(w, fmt.Errorf("please add all attributes"))
+		return
+	}
+
+	err = m.DB.RaiseRideRequest(requestBody)
+	if err != nil {
+		internalServerError(w, err)
+		return
+	}
+
+	response := jsonResponse{
+		OK:      true,
+		Message: "request raised successfully",
 	}
 
 	w.Header().Set("Content-Type", "application/json")
