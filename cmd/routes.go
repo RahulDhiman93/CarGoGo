@@ -3,11 +3,24 @@ package main
 import (
 	"InrixBackend/internal/handlers"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+	_ "github.com/go-chi/chi/middleware"
+	gh "github.com/gorilla/handlers"
 	"net/http"
 )
 
 func routes() http.Handler {
 	mux := chi.NewRouter()
+	mux.Use(middleware.Logger)
+	mux.Use(middleware.Recoverer)
+
+	corsHandler := gh.CORS(
+		gh.AllowedOrigins([]string{"*"}),            // Allow all origins
+		gh.AllowedMethods([]string{"GET", "POST"}),  // Allow only specified methods
+		gh.AllowedHeaders([]string{"Content-Type"}), // Allow only specified headers
+	)
+
+	mux.Use(corsHandler)
 
 	mux.Route("/auth", func(mux chi.Router) {
 		mux.Post("/login", handlers.Repo.LoginUser)
