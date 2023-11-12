@@ -5,10 +5,10 @@ import (
 	"net/http"
 )
 
-func internalServerError(w http.ResponseWriter) {
+func internalServerError(w http.ResponseWriter, err error) {
 	resp := jsonResponse{
 		OK:      false,
-		Message: "Internal server error",
+		Message: err.Error(),
 	}
 
 	out, _ := json.MarshalIndent(resp, "", "    ")
