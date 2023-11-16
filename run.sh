@@ -1,3 +1,3 @@
 #!/bin/bash
 
-go build -o InrixBackend cmd/*.go && ./InrixBackend -dbname=InrixBackend -dbuser=rahuldhiman
+go build -o CarGoGo cmd/*.go && ./CarGoGo -dbname=CarGoGo -dbuser=rahuldhiman

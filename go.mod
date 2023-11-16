@@ -1,4 +1,4 @@
-module InrixBackend
+module CarGoGo
 
 go 1.21
 

@@ -1,6 +1,6 @@
 package repository
 
-import "InrixBackend/internal/models"
+import "CarGoGo/internal/models"
 
 type DatabaseRepo interface {
 	RegisterUser(email, password, firstName, lastName, phone string) (string, error)

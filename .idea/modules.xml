@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/InrixBackend.iml" filepath="$PROJECT_DIR$/.idea/InrixBackend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/CarGoGo.iml" filepath="$PROJECT_DIR$/.idea/CarGoGo.iml" />
     </modules>
   </component>
 </project>

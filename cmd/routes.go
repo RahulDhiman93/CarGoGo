@@ -1,7 +1,7 @@
 package main
 
 import (
-	"InrixBackend/internal/handlers"
+	"CarGoGo/internal/handlers"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	_ "github.com/go-chi/chi/middleware"

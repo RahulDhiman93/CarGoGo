@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"InrixBackend/internal/driver"
-	"InrixBackend/internal/models"
-	_ "InrixBackend/internal/models"
-	"InrixBackend/internal/repository"
-	"InrixBackend/internal/repository/dbrepo"
+	"CarGoGo/internal/driver"
+	"CarGoGo/internal/models"
+	_ "CarGoGo/internal/models"
+	"CarGoGo/internal/repository"
+	"CarGoGo/internal/repository/dbrepo"
 	"encoding/json"
 	"fmt"
 	"github.com/go-chi/chi"

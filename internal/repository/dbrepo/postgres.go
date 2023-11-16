@@ -1,7 +1,7 @@
 package dbrepo
 
 import (
-	"InrixBackend/internal/models"
+	"CarGoGo/internal/models"
 	"context"
 	"crypto/rand"
 	"database/sql"

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"InrixBackend/internal/driver"
-	"InrixBackend/internal/handlers"
+	"CarGoGo/internal/driver"
+	"CarGoGo/internal/handlers"
 	"flag"
 	"fmt"
 	"log"

@@ -1,7 +1,7 @@
 package dbrepo
 
 import (
-	"InrixBackend/internal/repository"
+	"CarGoGo/internal/repository"
 	"database/sql"
 )
 
