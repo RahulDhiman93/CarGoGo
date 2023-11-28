@@ -18,8 +18,8 @@ type Ride struct {
 	FromLat     float64     `json:"from_lat"`
 	FromLong    float64     `json:"from_long"`
 	ToAddress   string      `json:"to_address"`
-	ToLong      float64     `json:"to_lat"`
-	ToLat       float64     `json:"to_long"`
+	ToLat       float64     `json:"to_lat"`
+	ToLong      float64     `json:"to_long"`
 	Price       int         `json:"price"`
 	Status      int         `json:"status"`
 	ReqCustIds  interface{} `json:"req_cust_ids"`

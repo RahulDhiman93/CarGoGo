@@ -119,7 +119,7 @@ func (m *postgresDBRepo) PostRide(r models.Ride) error {
 	if err != nil {
 		return err
 	}
-	query := `insert into rides (user_id, car_type, license_plate, dl, date_time, price, status, from_address, from_lat, from_long, to_address, to_lat, to_long,created_at,updated_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`
+	query := `insert into rides (user_id, car_type, license_plate, dl, date_time, price, status, from_address, from_lat, from_long, to_address, to_lat, to_long, created_at,updated_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`
 
 	_, err = m.DB.ExecContext(ctx, query,
 		r.UserId,
@@ -298,7 +298,7 @@ func checkDistanceAndFilter(rides []models.Ride, r models.GetRides) []models.Rid
 		distanceFrom := earthRadius * cFrom
 		distanceTo := earthRadius * cTo
 
-		if distanceFrom < 10 && distanceTo < 10 {
+		if distanceFrom < 15 && distanceTo < 15 {
 			newRides = append(newRides, ride)
 		}
 	}
