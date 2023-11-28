@@ -26,10 +26,16 @@ Change into the project directory:
 
 Install dependencies:
 `go mod download`
+`go tidy`
+`brew install postgresql@14`
+`brew install gobuffalo/tap/pop`
+`Install DBeaver for GUI`
 
 # Usage
-1. Run the application: `go run main.go`
-2. Visit `http://localhost:8080` in your web browser to access the CarGoGo API.
+1. Run `soda migrate` for up migration.
+2. Make sure PostgreSQL is running.
+3. Run the application: `./run.sh`.
+4. Visit `http://localhost:8080` with endpoints in Postman to access the CarGoGo API.
 
 # Contributing
 Contributions are welcome! Please check the whole project for details on our code of conduct and the process for submitting pull requests.
