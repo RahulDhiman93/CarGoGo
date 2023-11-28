@@ -25,11 +25,11 @@ Change into the project directory:
 `cd CarGoGo`
 
 Install dependencies:
-`go mod download`
-`go tidy`
-`brew install postgresql@14`
-`brew install gobuffalo/tap/pop`
-`Install DBeaver for GUI`
+1. `go mod download`
+2. `go tidy`
+3. `brew install postgresql@14`
+4. `brew install gobuffalo/tap/pop`
+5. `Install DBeaver for GUI`
 
 # Usage
 1. Run `soda migrate` for up migration.
