@@ -59,14 +59,14 @@ func (m *Repository) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := m.DB.RegisterUser(email, password, firstName, lastName, phone)
+	user, err := m.DB.RegisterUser(email, password, firstName, lastName, phone)
 	if err != nil {
 		internalServerError(w, err)
 		return
 	}
-	respData := make(map[string]interface{})
-	respData["token"] = token
 
+	respData := make(map[string]interface{})
+	respData["user"] = user
 	response := jsonResponse{
 		OK:      true,
 		Message: "user registered successfully",
